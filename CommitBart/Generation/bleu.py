@@ -53,7 +53,6 @@ def normalize(s):
     for (pattern, replace) in normalize1:
         s = re.sub(pattern, replace, s)
     s = xml.sax.saxutils.unescape(s, {'&quot;': '"'})
-    # language-dependent part (assuming Western languages):
     s = " %s " % s
     if not preserve_case:
         s = s.lower()  # this might not be identical to the original
@@ -117,7 +116,7 @@ def cook_test(test, item, n=4):
 
 
 def score_cooked(allcomps, n=4, ground=0, smooth=1):
-    print('all comps', allcomps)
+    #print('all comps', allcomps)
     totalcomps = {'testlen': 0, 'reflen': 0, 'guess': [0] * n, 'correct': [0] * n}
     for comps in allcomps:
         for key in ['testlen', 'reflen']:
@@ -130,29 +129,23 @@ def score_cooked(allcomps, n=4, ground=0, smooth=1):
     for k in range(n):
         correct = totalcomps['correct'][k]
         guess = totalcomps['guess'][k]
-        print('correct: ', correct, ' guss: ', guess)
         addsmooth = 0
         if smooth == 1 and k > 0:
             addsmooth = 1
         logbleu += math.log(correct + addsmooth + sys.float_info.min) - math.log(guess + addsmooth + sys.float_info.min)
-        print('logbleu ', logbleu)
         if guess == 0:
             all_bleus.append(-10000000)
         else:
             all_bleus.append(math.log(correct + sys.float_info.min) - math.log(guess))
-        print(str(k) + ' all bleu', all_bleus)
 
     logbleu /= float(n)
-    print('logbleu 2', logbleu)
     all_bleus.insert(0, logbleu)
-    print('allbleus ', all_bleus)
 
     brevPenalty = min(0, 1 - float(totalcomps['reflen'] + 1) / (totalcomps['testlen'] + 1))
     for i in range(len(all_bleus)):
         if i == 0:
             all_bleus[i] += brevPenalty
         all_bleus[i] = math.exp(all_bleus[i])
-        print('all bleus ', all_bleus)
 
     return all_bleus
 
@@ -160,7 +153,6 @@ def score_cooked(allcomps, n=4, ground=0, smooth=1):
 def bleu(refs, candidate, ground=0, smooth=1):
     refs = cook_refs(refs)
     test = cook_test(candidate, refs)
-    print('refs', refs, '\ncandidate', test)
     return score_cooked([test], ground=ground, smooth=smooth)
 
 
@@ -197,16 +189,11 @@ def computeMaps(predictions, goldfile):
 def bleuFromMaps(m1, m2):
     score = [0] * 5
     num = 0.0
-    print('m1', m1)
-    print('m2', m2)
     for key in m1:
         if key in m2:
             bl = bleu(m1[key], m2[key][0])
-            print('bl is ', bl)
             score = [score[i] + bl[i] for i in range(0, len(bl))]
             num += 1
-    print('num is ', num)
-    print('score is ', score)
 
     return [s * 100.0 / num for s in score]
 
