@@ -6,16 +6,12 @@ pip install --user transformers > log.txt 2>&1
 #pip install torch==1.8.1+cu111 torchvision==0.9.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html
 pip install torch==1.6.0+cu101 torchvision==0.7.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html > log.txt 2>&1
 export CUDA_VISIBLE_DEVICES=1
-#MODE=hybrid        # raw, contrastive, hybrid
-#CONTRA_MASK=2      # 0,1,2
-#QUEUE_SIZE=65536   # 65536, 16384, 4096, 131072
 WEIGHT=0.5         # 0.25， 0.5, 1.0, 2.0
 MODEL_TYPE=plbart
 TEST=checkpoint-3000-0.919/whole_model.bin
-MODEL_NAME=uclanlp/plbart-base  # roberta-base, microsoft/codebert-base, microsoft/graphcodebert-base
+MODEL_NAME=NTU-CSL/CommitBART-unseg  # roberta-base, microsoft/codebert-base, microsoft/graphcodebert-base
 MODEL_NAME_ALIAS=${MODEL_NAME/'/'/-}
 FROM_SAVE=True
-#SAVED_PATH=../result/commitBart_WO_pos_plbart/checkpoint-60000-0.327/
 SAVED_PATH=../result/checkpoint-80000-0.321/
 IGNORE=None    #rename_var_names, rename_func_names, sample_funcs, insert_funcs, reorder_funcs, delete_token_docstrings, switch_token_docstrings, copy_token_docstring
 FINE_TUNE=msg
@@ -69,6 +65,6 @@ CUDA_LAUNCH_BLOCKING=1 python run_finetune.py\
     --weight $WEIGHT \
     --ignore_type $IGNORE \
     --beam_size $BEAM_SIZE \
-    --saved_path $SAVED_PATH \
+    --not_embed \
     --test_step $TEST_STEP
 

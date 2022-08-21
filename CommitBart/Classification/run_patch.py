@@ -608,10 +608,6 @@ def main():
     model = Bart_seq2seq(bart=model, config=config, args = args,
                     beam_size=args.beam_size, max_length=target_size,
                     sos_id=tokenizer.cls_token_id, eos_id=tokenizer.eos_token_id, type = True)
-    if args.saved_path is not None:
-        ckpt = os.path.join(args.saved_path, 'module.bin')
-        model.load_state_dict(torch.load(ckpt))
-        logger.info("load ckpt from {}".format(ckpt))
     print('model finishi')
     if args.local_rank == 0:
         torch.distributed.barrier()  # End of barrier to make sure only the first process in distributed training download model & vocab
