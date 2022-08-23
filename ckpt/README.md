@@ -1,6 +1,7 @@
-# CommitBART
-CommitBART is a Encoder-Decoder pre-trained model on GitHub commit. The model covers 7 programming languges (C, CSharp, JAVA, JAVAScript, PHP, Python, TypeScript). This repo provides the code for reproducing experiments in [CommitBART: A Large Pre-trained Model for GitHub Commits](https://arxiv.org/abs/2208.08100)
+### Pre-train model checkpoint
+We provide our pretrained checkpoint of CommitBART, that is CommitBART-base, and also the CommitBART pretrained without segment embedding CommitBART-unseg. The checkpoint can be found at. You can directly load the model's paramters from 'module.bin'.
 
-# Benchmark
-We proposed a benchmark for research on commit-related task. We collect 7M instances of commits from top-ranked GitHub projects for pre-training, whereas the other 500K data is used for fine-tuning. The data can be found at https://drive.google.com/file/d/1sXYZeP-hwTrwTwa_RQF4qLOvAPEqjNRI/view?usp=sharing.
+## Hugginface/transformers
+We also upload our model to hugginface. For directly inference using our pre-trained model for text infilling or PLNL2PL, NL2PL generations, you need to load the lm_head.bin to model.lm_head for conditional generation.
+Since our CommitBART contains a embedding matrix for segmengts. If you load the CommitBART-base model from huggingface, you still need to load the token_type_embeddings.bin to model.token_type_embeedings.
 

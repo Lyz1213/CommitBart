@@ -1,7 +1,7 @@
 # Downstream generation tasks
 We provide the code for reproducing the experiments on three downstream commit-related generation task (commit message generation, Positive Code Statements Generation, and updated code snippet generation)
 
-##Fine-tune
+## Fine-tune
 ```shell   
 MODEL_NAME=uclanlp/plbart-base
 MODEL_NAME_ALIAS=${MODEL_NAME/'/'/-}
@@ -54,11 +54,15 @@ CUDA_LAUNCH_BLOCKING=1 python run_finetune.py\
     --save_steps $SAVE_STEPS \
     --seed 123456 \
     --lang $LANGUAGE \
-    --weight $WEIGHT \
-    --ignore_type $IGNORE \
     --beam_size $BEAM_SIZE \
     --not_embed \
     --test_step $TEST_STEP
 
 
+```
+## Inference and evaluation
+For evaluation the fine-tuned model, you can simply add the argument based on above script
+```shell  
+TEST=../result/CommitBART_msg_python_uclanlp/plbart/yourcheckpoint.bin
+--test_path $TEST
 ```
