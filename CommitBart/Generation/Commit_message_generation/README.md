@@ -1,13 +1,15 @@
-# Downstream generation tasks
-We provide the code for reproducing the experiments on updated code snippet geneartion.
+# Commit message generation
+We provide the code for reproducing the experiments on commit message generation
 ## Data preprocess
-The input is: commit message + file path + code snippet which only contains negative changes. Where as the output is: code snippet with only positive changes.
+The input is: file path + code snippet with both negative and positive statements
+
+The output is: commit message
 ## Fine-tune
 ```shell   
 MODEL_NAME=uclanlp/plbart-base
 MODEL_NAME_ALIAS=${MODEL_NAME/'/'/-}
 SAVED_PATH=../ckpt/CommitBART-base
-FINE_TUNE=pos # fine-tune task: msg->commit message generation, pos->updated code snippet generation, sp->positive code statements generation
+FINE_TUNE=msg # fine-tune task: msg->commit message generation, pos->updated code snippet generation, sp->positive code statements generation
 LANGUAGE=python #c,csharp,java,javascript,php,python,typescript
 OUTPUT=../result/CommitBART_${FINE_TUNE}_${LANGUAGE}_${MODEL_NAME_ALIAS}
 TRAIN_FILE=../data/finetune_data/ #for msg and pos
@@ -19,7 +21,7 @@ mkdir -p ${OUTPUT}
 BLOCK_SIZE=512 # max input length
 TRAIN_BATCH_SIZE=16 #
 EVAL_BATCH_SIZE=32
-ACCUMULATE_STEPS=2 #6
+ACCUMULATE_STEPS=2
 LEARNING_RATE=5e-5
 WEIGHT_DECAY=0.01
 ADAM_EPS=1e-6
@@ -54,12 +56,14 @@ CUDA_LAUNCH_BLOCKING=1 python run_finetune.py\
     --seed 123456 \
     --lang $LANGUAGE \
     --beam_size $BEAM_SIZE \
-    --not_embed \
     --test_step $TEST_STEP
 
 
 ```
 ## Inference and evaluation
+We use smoothed BLEU-4 for evaluating the commit message generation
+
+
 For evaluation the fine-tuned model, you can simply add the argument based on above script
 ```shell  
 TEST=../result/CommitBART_msg_python_uclanlp/plbart/yourcheckpoint.bin

@@ -1,21 +1,19 @@
-# Downstream generation tasks
-We provide the code for reproducing the experiments on Positive Code Statements Generation.
+# Updated code snippet generation
+We provide the code for reproducing the experiments on updated code snippet geneartion.
 ## Data preprocess
-The input is the commit which only contains several consecutive negative changes, and the positive statements is at the same place with the negative statents to modify the original code snippet.\\
-The input format is: commit message + file path + code snippet with only negative statements\\
-The output format is: positive changes (consecutive)
+The input is: commit message + file path + code snippet which only contains negative changes
+
+the output is: code snippet with only positive changes
 ## Fine-tune
 ```shell   
 MODEL_NAME=uclanlp/plbart-base
 MODEL_NAME_ALIAS=${MODEL_NAME/'/'/-}
 SAVED_PATH=../ckpt/CommitBART-base
-FINE_TUNE=msg # fine-tune task: msg->commit message generation, pos->updated code snippet generation, sp->positive code statements generation
+FINE_TUNE=pos # fine-tune task: msg->commit message generation, pos->updated code snippet generation, sp->positive code statements generation
 LANGUAGE=python #c,csharp,java,javascript,php,python,typescript
 OUTPUT=../result/CommitBART_${FINE_TUNE}_${LANGUAGE}_${MODEL_NAME_ALIAS}
 TRAIN_FILE=../data/finetune_data/ #for msg and pos
 EVAL_FILE=../data/test/
-#TRAIN_FILE=../f_single_pos_data/ #for sp
-#EVAL_FILE=../f_fingle_pos_data/
 NODE_INDEX=0 && echo NODE_INDEX: ${NODE_INDEX}
 PER_NODE_GPU=4 && echo PER_NODE_GPU: ${PER_NODE_GPU}
 NUM_NODE=1 && echo NUM_NODE: ${NUM_NODE}
@@ -27,11 +25,11 @@ ACCUMULATE_STEPS=2 #6
 LEARNING_RATE=5e-5
 WEIGHT_DECAY=0.01
 ADAM_EPS=1e-6
-MAX_STEPS=8000
-WARMUP_STEPS=800 # 0.1 of max steps
-SAVE_STEPS=2000 
+MAX_STEPS=10000
+WARMUP_STEPS=1000 # 0.1 of max steps
+SAVE_STEPS=2000  
 BEAM_SIZE=1
-TEST_STEP=8000
+TEST_STEP=10000
 
 CUDA_LAUNCH_BLOCKING=1 python run_finetune.py\
     --output_dir=$OUTPUT \
