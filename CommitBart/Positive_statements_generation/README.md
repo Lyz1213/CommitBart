@@ -1,8 +1,9 @@
 # Downstream generation tasks
 We provide the code for reproducing the experiments on Positive Code Statements Generation.
 ## Data preprocess
-Given a commit is made up of several components. We defined several special sep token to denote each -> ''[MSG]'' for commit message, ''[FILE]'' for file path, ''[CODE]'' For code snippet, ''[POS]/[END]'' for a postive change statement, and ''[NEG]/[END]'' for a negative change statement.
-Besides, we also use segment embedding to embed tokens in each segment in CommitBART-base -> 0: commit message, 1: postive statmens, 2: negative statements, 3: file path, 4: code context
+The input is the commit which only contains several consecutive negative changes, and the positive statements is at the same place with the negative statents to modify the original code snippet.\\
+The input format is: commit message + file path + code snippet with only negative statements\\
+The output format is: positive changes (consecutive)
 ## Fine-tune
 ```shell   
 MODEL_NAME=uclanlp/plbart-base
@@ -26,11 +27,11 @@ ACCUMULATE_STEPS=2 #6
 LEARNING_RATE=5e-5
 WEIGHT_DECAY=0.01
 ADAM_EPS=1e-6
-MAX_STEPS=10000
-WARMUP_STEPS=1000 # 0.1 of max steps
-SAVE_STEPS=2000  
+MAX_STEPS=8000
+WARMUP_STEPS=800 # 0.1 of max steps
+SAVE_STEPS=2000 
 BEAM_SIZE=1
-TEST_STEP=10000
+TEST_STEP=8000
 
 CUDA_LAUNCH_BLOCKING=1 python run_finetune.py\
     --output_dir=$OUTPUT \

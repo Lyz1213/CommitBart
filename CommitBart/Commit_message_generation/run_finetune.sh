@@ -1,34 +1,35 @@
-# Downstream generation tasks
-We provide the code for reproducing the experiments on Positive Code Statements Generation.
-## Data preprocess
-Given a commit is made up of several components. We defined several special sep token to denote each -> ''[MSG]'' for commit message, ''[FILE]'' for file path, ''[CODE]'' For code snippet, ''[POS]/[END]'' for a postive change statement, and ''[NEG]/[END]'' for a negative change statement.
-Besides, we also use segment embedding to embed tokens in each segment in CommitBART-base -> 0: commit message, 1: postive statmens, 2: negative statements, 3: file path, 4: code context
-## Fine-tune
-```shell   
-MODEL_NAME=uclanlp/plbart-base
+cd apex
+pip install -v --no-cache-dir ./ > log_apex_2.txt 2>&1
+cd ..
+pip install --user transformers > log.txt 2>&1
+
+#pip install torch==1.8.1+cu111 torchvision==0.9.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html
+pip install torch==1.6.0+cu101 torchvision==0.7.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html > log.txt 2>&1
+export CUDA_VISIBLE_DEVICES=1      
+MODEL_NAME=uclanlp/CommitBART-unseg  # roberta-base, microsoft/codebert-base, microsoft/graphcodebert-base
 MODEL_NAME_ALIAS=${MODEL_NAME/'/'/-}
-SAVED_PATH=../ckpt/CommitBART-base
-FINE_TUNE=msg # fine-tune task: msg->commit message generation, pos->updated code snippet generation, sp->positive code statements generation
+FROM_SAVE=True
+SAVED_PATH=../result/CommitBART-unseg/
+IGNORE=None    #rename_var_names, rename_func_names, sample_funcs, insert_funcs, reorder_funcs, delete_token_docstrings, switch_token_docstrings, copy_token_docstring
+FINE_TUNE=msg
 LANGUAGE=python #c,csharp,java,javascript,php,python,typescript
 OUTPUT=../result/CommitBART_${FINE_TUNE}_${LANGUAGE}_${MODEL_NAME_ALIAS}
-TRAIN_FILE=../data/finetune_data/ #for msg and pos
+TRAIN_FILE=../data/finetune_data/
 EVAL_FILE=../data/test/
-#TRAIN_FILE=../f_single_pos_data/ #for sp
-#EVAL_FILE=../f_fingle_pos_data/
 NODE_INDEX=0 && echo NODE_INDEX: ${NODE_INDEX}
 PER_NODE_GPU=4 && echo PER_NODE_GPU: ${PER_NODE_GPU}
 NUM_NODE=1 && echo NUM_NODE: ${NUM_NODE}
 mkdir -p ${OUTPUT}
-BLOCK_SIZE=512 # max input length
-TRAIN_BATCH_SIZE=16 #
-EVAL_BATCH_SIZE=32
+BLOCK_SIZE=512 # sentence length
+TRAIN_BATCH_SIZE=16 #12 #32 # per gpu batch
+EVAL_BATCH_SIZE=16 #12 #32
 ACCUMULATE_STEPS=2 #6
 LEARNING_RATE=5e-5
 WEIGHT_DECAY=0.01
 ADAM_EPS=1e-6
 MAX_STEPS=10000
 WARMUP_STEPS=1000 # 0.1 of max steps
-SAVE_STEPS=2000  
+SAVE_STEPS=2000  #
 BEAM_SIZE=1
 TEST_STEP=10000
 
@@ -56,15 +57,9 @@ CUDA_LAUNCH_BLOCKING=1 python run_finetune.py\
     --save_steps $SAVE_STEPS \
     --seed 123456 \
     --lang $LANGUAGE \
+    --weight $WEIGHT \
+    --ignore_type $IGNORE \
     --beam_size $BEAM_SIZE \
     --not_embed \
     --test_step $TEST_STEP
 
-
-```
-## Inference and evaluation
-For evaluation the fine-tuned model, you can simply add the argument based on above script
-```shell  
-TEST=../result/CommitBART_msg_python_uclanlp/plbart/yourcheckpoint.bin
---test_path $TEST
-```

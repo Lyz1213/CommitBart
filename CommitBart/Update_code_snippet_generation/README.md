@@ -1,20 +1,17 @@
 # Downstream generation tasks
-We provide the code for reproducing the experiments on Positive Code Statements Generation.
+We provide the code for reproducing the experiments on updated code snippet geneartion.
 ## Data preprocess
-Given a commit is made up of several components. We defined several special sep token to denote each -> ''[MSG]'' for commit message, ''[FILE]'' for file path, ''[CODE]'' For code snippet, ''[POS]/[END]'' for a postive change statement, and ''[NEG]/[END]'' for a negative change statement.
-Besides, we also use segment embedding to embed tokens in each segment in CommitBART-base -> 0: commit message, 1: postive statmens, 2: negative statements, 3: file path, 4: code context
+The input is: commit message + file path + code snippet which only contains negative changes. Where as the output is: code snippet with only positive changes.
 ## Fine-tune
 ```shell   
 MODEL_NAME=uclanlp/plbart-base
 MODEL_NAME_ALIAS=${MODEL_NAME/'/'/-}
 SAVED_PATH=../ckpt/CommitBART-base
-FINE_TUNE=msg # fine-tune task: msg->commit message generation, pos->updated code snippet generation, sp->positive code statements generation
+FINE_TUNE=pos # fine-tune task: msg->commit message generation, pos->updated code snippet generation, sp->positive code statements generation
 LANGUAGE=python #c,csharp,java,javascript,php,python,typescript
 OUTPUT=../result/CommitBART_${FINE_TUNE}_${LANGUAGE}_${MODEL_NAME_ALIAS}
 TRAIN_FILE=../data/finetune_data/ #for msg and pos
 EVAL_FILE=../data/test/
-#TRAIN_FILE=../f_single_pos_data/ #for sp
-#EVAL_FILE=../f_fingle_pos_data/
 NODE_INDEX=0 && echo NODE_INDEX: ${NODE_INDEX}
 PER_NODE_GPU=4 && echo PER_NODE_GPU: ${PER_NODE_GPU}
 NUM_NODE=1 && echo NUM_NODE: ${NUM_NODE}

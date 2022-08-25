@@ -1,5 +1,5 @@
 # Downstream generation tasks
-We provide the code for reproducing the experiments on Positive Code Statements Generation.
+We provide the code for reproducing the experiments on commit message generation
 ## Data preprocess
 Given a commit is made up of several components. We defined several special sep token to denote each -> ''[MSG]'' for commit message, ''[FILE]'' for file path, ''[CODE]'' For code snippet, ''[POS]/[END]'' for a postive change statement, and ''[NEG]/[END]'' for a negative change statement.
 Besides, we also use segment embedding to embed tokens in each segment in CommitBART-base -> 0: commit message, 1: postive statmens, 2: negative statements, 3: file path, 4: code context
@@ -13,8 +13,6 @@ LANGUAGE=python #c,csharp,java,javascript,php,python,typescript
 OUTPUT=../result/CommitBART_${FINE_TUNE}_${LANGUAGE}_${MODEL_NAME_ALIAS}
 TRAIN_FILE=../data/finetune_data/ #for msg and pos
 EVAL_FILE=../data/test/
-#TRAIN_FILE=../f_single_pos_data/ #for sp
-#EVAL_FILE=../f_fingle_pos_data/
 NODE_INDEX=0 && echo NODE_INDEX: ${NODE_INDEX}
 PER_NODE_GPU=4 && echo PER_NODE_GPU: ${PER_NODE_GPU}
 NUM_NODE=1 && echo NUM_NODE: ${NUM_NODE}
@@ -22,7 +20,7 @@ mkdir -p ${OUTPUT}
 BLOCK_SIZE=512 # max input length
 TRAIN_BATCH_SIZE=16 #
 EVAL_BATCH_SIZE=32
-ACCUMULATE_STEPS=2 #6
+ACCUMULATE_STEPS=2
 LEARNING_RATE=5e-5
 WEIGHT_DECAY=0.01
 ADAM_EPS=1e-6
@@ -57,7 +55,6 @@ CUDA_LAUNCH_BLOCKING=1 python run_finetune.py\
     --seed 123456 \
     --lang $LANGUAGE \
     --beam_size $BEAM_SIZE \
-    --not_embed \
     --test_step $TEST_STEP
 
 
