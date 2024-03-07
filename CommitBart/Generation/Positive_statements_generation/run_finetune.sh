@@ -1,14 +1,13 @@
-cd apex
-pip install -v --no-cache-dir ./ > log_apex_2.txt 2>&1
-cd ..
-pip install --user transformers > log.txt 2>&1
+#cd apex
+#pip install -v --no-cache-dir ./ > log_apex_2.txt 2>&1
+#cd ..
+#pip install --user transformers > log.txt 2>&1
 pip install torch==1.6.0+cu101 torchvision==0.7.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html > log.txt 2>&1
 export CUDA_VISIBLE_DEVICES=1
-MODEL_NAME=NTU-CSL/CommitBART-unseg  # roberta-base, microsoft/codebert-base, microsoft/graphcodebert-base
+MODEL_NAME=uclanlp/plbart-base  # roberta-base, microsoft/codebert-base, microsoft/graphcodebert-base
 MODEL_NAME_ALIAS=${MODEL_NAME/'/'/-}
-FROM_SAVE=True
-SAVED_PATH=../result/CommitBART-base/
-IGNORE=None    #rename_var_names, rename_func_names, sample_funcs, insert_funcs, reorder_funcs, delete_token_docstrings, switch_token_docstrings, copy_token_docstring
+MODEL_TYPE=plbart
+SAVED_PATH=../result/CommitBART-unseg/
 FINE_TUNE=sp
 LANGUAGE=python #c,csharp,java,javascript,php,python,typescript
 OUTPUT=../result/CommitBART_${FINE_TUNE}_${LANGUAGE}_${MODEL_NAME_ALIAS}
@@ -55,9 +54,8 @@ CUDA_LAUNCH_BLOCKING=1 python run_finetune.py\
     --save_steps $SAVE_STEPS \
     --seed 123456 \
     --lang $LANGUAGE \
-    --weight $WEIGHT \
-    --ignore_type $IGNORE \
     --beam_size $BEAM_SIZE \
+    --test_step $TEST_STEP \
+    --saved_path $SAVED_PATH \
     --not_embed \
-    --test_step $TEST_STEP
 

@@ -520,8 +520,6 @@ def main():
     parser.add_argument('--server_port', type=str, default='', help="For distant debugging.")
     parser.add_argument('--lang', type=str)
     parser.add_argument('--mode', type=str, help="For different mode to train.")
-    parser.add_argument('--weight', type=float, default=1.0, help="The weight for contrastive loss.")
-    parser.add_argument('--queue_size', type=int, default=65536, help="The queue length for negative samples.")
     parser.add_argument('--contra_mask', type=int, default=0,
                         help="Random mask on query or key in contrastive learning.")
     parser.add_argument('--ignore_type', type=str, default='',
@@ -565,10 +563,10 @@ def main():
         #torch.distributed.barrier(device_ids=int(os.environ[str(args.local_rank)])) # Barrier to make sure only the first process in distributed training download model & vocab
     args.start_epoch = 0
     args.start_step = 0
-    if args.saved_path is not None:
-        args.model_name_or_path = os.path.join(args.saved_path, 'pytorch_model.bin')
-        args.config_name = os.path.join(args.saved_path, 'config.json')
-        logger.info("load model from {}".format(args.model_name_or_path))
+    # if args.saved_path is not None:
+    #     args.model_name_or_path = os.path.join(args.saved_path, 'pytorch_model.bin')
+    #     args.config_name = os.path.join(args.saved_path, 'config.json')
+    #     logger.info("load model from {}".format(args.model_name_or_path))
     config_class, model_class, tokenizer_class = MODEL_CLASSES[args.model_type]
     config = config_class.from_pretrained(args.config_name if args.config_name else args.model_name_or_path)
     tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name)
@@ -582,6 +580,10 @@ def main():
     model = Bart_seq2seq(bart=model, config=config, args = args,
                     beam_size=args.beam_size, max_length=target_size,
                     sos_id=tokenizer.cls_token_id, eos_id=tokenizer.eos_token_id, type = True)
+    if args.saved_path is not None:
+        ckpt = os.path.join(args.saved_path, 'module.bin')
+        model.load_state_dict(torch.load(ckpt))
+        logger.info("load ckpt from {}".format(ckpt))
     if args.local_rank == 0:
         torch.distributed.barrier()  # End of barrier to make sure only the first process in distributed training download model & vocab
     logger.info("Training/evaluation parameters %s", args)
