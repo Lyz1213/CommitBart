@@ -15,11 +15,11 @@ import torch
 from transformers import PLBartTokenizer, PLBartConfig, PLBartModel
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-tokenizer = PLBartTokenizer.from_pretrained("TODO")
-model = PLBartModel.from_pretrained("TODO")
+tokenizer = PLBartTokenizer.from_pretrained("NTU-CSL/CommitBART-unseg")
+model = PLBartModel.from_pretrained("NTU-CSL/CommitBART-unseg")
 model.to(device)
 ```
-Or you can simply load the model's checkpoint from the link provided in folder ckpt
+Or you can load the model's checkpoint from the link provided in folder ckpt(recommended).
 
 ### Comparison with ChatGPT
 We also provide the reuslts of ChatGPT for 100 samples at this [link](https://drive.google.com/drive/folders/1xMaQd2xtr4Rgac7vYLBcTWcIf4udzFwU) where the key "commitbart" is the results for CommitBART, "chatgpt" is the results for ChatGPT and "date" refers to the commit date.
