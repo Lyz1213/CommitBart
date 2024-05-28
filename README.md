@@ -22,4 +22,4 @@ model.to(device)
 Or you can load the model's checkpoint from the link provided in folder ckpt(recommended).
 
 ### Comparison with ChatGPT
-We also provide the reuslts of ChatGPT for 100 samples at this [link](https://drive.google.com/drive/folders/1xMaQd2xtr4Rgac7vYLBcTWcIf4udzFwU) where the key "commitbart" is the results for CommitBART, "chatgpt" is the results for ChatGPT and "date" refers to the commit date.
+We also provide the reuslts of ChatGPT for 100 samples at this [link](https://drive.google.com/drive/folders/1PfYVtvhU7RVjaaRD8IqgH0taQKs2CRKq?usp=sharing) where the key "commitbart" is the results for CommitBART, "chatgpt" is the results for zero-shot ChatGPT, "chatgpt_fewshot3" is the results for ChatGPT with 3 examples as demonstrations, and "date" refers to the commit date.
